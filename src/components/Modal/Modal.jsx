@@ -2,7 +2,7 @@ import React from "react";
 import style from "./style.module.css";
 import PropTypes from "prop-types";
 
-function Modal({ onClickImage, imageForModal, title }) {
+function Modal({ onClickImage, imageForModal, title, onClick }) {
   return (
     <div className={style.overlay} onClick={onClickImage}>
       <div className={style.modal}>

@@ -23,20 +23,26 @@ class App extends Component {
     if (prevState.searchQuery !== this.state.searchQuery) {
       this.fechImages();
     }
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
+
     window.addEventListener("keydown", this.handleKeyDown);
   }
+
   handleKeyDown = (e) => {
     if (e.code === "Escape") {
       this.toggleModal();
+      window.removeEventListener("keydown", this.handleKeyDown);
     }
   };
+
   onClickGalleryItem = (src, alt) => {
     this.toggleModal();
     this.setState({ imageForModal: src, title: alt });
+  };
+
+  backDroppCloseModal = (event) => {
+    if (event.target === event.currentTarget) {
+      this.toggleModal();
+    }
   };
 
   toggleModal = () => {
@@ -53,6 +59,13 @@ class App extends Component {
     });
   };
 
+  scrollTo = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
   fechImages = () => {
     const { currentPage, searchQuery } = this.state;
     const options = {
@@ -60,6 +73,7 @@ class App extends Component {
       searchQuery,
       error: null,
     };
+
     this.setState({
       isLoading: true,
     });
@@ -71,11 +85,14 @@ class App extends Component {
         }))
       )
       .catch((error) => this.setState({ error }))
-      .finally(() =>
+      .finally(() => {
+        {
+          currentPage > 1 && this.scrollTo();
+        }
         this.setState({
           isLoading: false,
-        })
-      );
+        });
+      });
   };
 
   render() {
@@ -93,7 +110,7 @@ class App extends Component {
         {shouldRenderBtnLoadMore && <BtnLoadMore onClick={this.fechImages} />}
         {showModal && (
           <Modal
-            onClickImage={this.toggleModal}
+            onClickImage={this.backDroppCloseModal}
             imageForModal={imageForModal}
             title={title}
           />
